@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MMT Clone - All Services</title>
+  <title>MMT Clone - Hotels & Flights</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -25,7 +25,7 @@
     <section id="hotels" class="search-section">
       <h2>Search Hotels</h2>
       <form id="hotelSearchForm">
-        <div style="flex:1; position:relative;">
+        <div style="position: relative; flex: 1;">
           <input type="text" id="hotelCity" placeholder="Enter city" autocomplete="off" required>
           <div id="hotelSuggestions" class="suggestions"></div>
         </div>
@@ -38,15 +38,14 @@
     <section id="flights" class="search-section">
       <h2>Search Flights</h2>
       <form id="flightSearchForm">
-        <div style="flex:1; position:relative;">
-          <input type="text" id="flightOrigin" placeholder="From (e.g., DEL)" autocomplete="off" required>
+        <div style="position: relative; flex: 1;">
+          <input type="text" id="flightOrigin" placeholder="From (e.g., JFK)" autocomplete="off" required>
           <div id="originSuggestions" class="suggestions"></div>
         </div>
-        <div style="flex:1; position:relative;">
-          <input type="text" id="flightDestination" placeholder="To (e.g., BOM)" autocomplete="off" required>
+        <div style="position: relative; flex: 1;">
+          <input type="text" id="flightDestination" placeholder="To (e.g., LAX)" autocomplete="off" required>
           <div id="destinationSuggestions" class="suggestions"></div>
         </div>
-        <input type="date" id="flightDate" required>
         <button type="submit">Search Flights</button>
       </form>
       <div id="flightResults" class="results"></div>
@@ -54,32 +53,27 @@
 
     <!-- Holiday Packages -->
     <section id="holidays" class="search-section">
-      <h2>Search Holiday Packages</h2>
+      <h2>Holiday Packages</h2>
       <form id="holidaySearchForm">
-        <input type="text" id="holidayDestination" placeholder="Enter destination" required>
-        <button type="submit">Search Holidays</button>
+        <button type="submit">Get Packages</button>
       </form>
       <div id="holidayResults" class="results"></div>
     </section>
 
     <!-- Trains -->
     <section id="trains" class="search-section">
-      <h2>Search Trains</h2>
+      <h2>Trains</h2>
       <form id="trainSearchForm">
-        <input type="text" id="trainOrigin" placeholder="From (e.g., Delhi)" required>
-        <input type="text" id="trainDestination" placeholder="To (e.g., Mumbai)" required>
-        <button type="submit">Search Trains</button>
+        <button type="submit">Get Trains</button>
       </form>
       <div id="trainResults" class="results"></div>
     </section>
 
     <!-- Cabs -->
     <section id="cabs" class="search-section">
-      <h2>Search Cabs</h2>
+      <h2>Cabs</h2>
       <form id="cabSearchForm">
-        <input type="text" id="cabPickup" placeholder="Pickup location" required>
-        <input type="text" id="cabDrop" placeholder="Drop location" required>
-        <button type="submit">Search Cabs</button>
+        <button type="submit">Get Cabs</button>
       </form>
       <div id="cabResults" class="results"></div>
     </section>
