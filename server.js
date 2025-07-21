@@ -3,12 +3,11 @@ const path = require("path");
 const axios = require("axios");
 
 const app = express();
-app.use(express.static(__dirname)); // Serve frontend files like index.html, script.js, styles.css
+app.use(express.static(__dirname)); // Serve static files
 
-// Read RapidAPI Key from environment
 const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
 
-// ===== Hotels API (Booking.com via RapidAPI) =====
+// ===== Hotels API (Booking.com) =====
 app.get("/api/hotels", async (req, res) => {
   try {
     const { city = "New York" } = req.query;
@@ -28,7 +27,7 @@ app.get("/api/hotels", async (req, res) => {
   }
 });
 
-// ===== Flights API (Booking.com via RapidAPI) =====
+// ===== Flights API (Booking.com) =====
 app.get("/api/flights", async (req, res) => {
   try {
     const { departId = "JFK", arrivalId = "LOS" } = req.query;
@@ -48,7 +47,52 @@ app.get("/api/flights", async (req, res) => {
   }
 });
 
-// ===== Holiday Packages (Dummy Data) =====
+// ===== Suggestions API =====
+app.get("/api/suggestions", async (req, res) => {
+  try {
+    const { keyword, type } = req.query;
+    if (!keyword) return res.json([]);
+
+    if (type === "HOTEL") {
+      const response = await axios.get("https://booking-com.p.rapidapi.com/v1/hotels/locations", {
+        params: { name: keyword, locale: "en-us" },
+        headers: {
+          "X-RapidAPI-Host": "booking-com.p.rapidapi.com",
+          "X-RapidAPI-Key": RAPIDAPI_KEY,
+        },
+      });
+
+      const suggestions = response.data.map(item => ({
+        code: item.dest_id || item.label,
+        name: item.label || item.name,
+      }));
+      return res.json(suggestions);
+    }
+
+    if (type === "AIRPORT") {
+      const response = await axios.get("https://booking-com18.p.rapidapi.com/flights/auto-complete", {
+        params: { text: keyword },
+        headers: {
+          "X-RapidAPI-Host": "booking-com18.p.rapidapi.com",
+          "X-RapidAPI-Key": RAPIDAPI_KEY,
+        },
+      });
+
+      const suggestions = response.data?.map(item => ({
+        code: item.iata_code || item.label,
+        name: item.label || item.name,
+      })) || [];
+      return res.json(suggestions);
+    }
+
+    res.json([]);
+  } catch (error) {
+    console.error("Suggestions API Error:", error.response?.data || error.message);
+    res.status(500).json([]);
+  }
+});
+
+// ===== Dummy APIs for Holidays, Trains, Cabs =====
 app.get("/api/holidays", (req, res) => {
   res.json([
     { id: 1, package: "Goa 3N/4D Beach Package", price: 12000 },
@@ -56,7 +100,6 @@ app.get("/api/holidays", (req, res) => {
   ]);
 });
 
-// ===== Trains (Dummy Data) =====
 app.get("/api/trains", (req, res) => {
   res.json([
     { train: "Rajdhani Express", from: "Delhi", to: "Mumbai", price: 2200 },
@@ -64,7 +107,6 @@ app.get("/api/trains", (req, res) => {
   ]);
 });
 
-// ===== Cabs (Dummy Data) =====
 app.get("/api/cabs", (req, res) => {
   res.json([
     { cab: "Sedan - Ola", price: 500 },
@@ -77,6 +119,5 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// ===== Start Server =====
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
