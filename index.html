@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MMT Clone - Live Hotel & Flight Search</title>
+  <title>MMT Clone - Hotels & Flights Search</title>
   <link rel="stylesheet" href="styles.css">
   <style>
-    /* Simple inline CSS if you don't have styles.css */
     body {
       font-family: Arial, sans-serif;
       background-color: #f5f5f5;
@@ -31,6 +30,7 @@
       gap: 10px;
       margin-bottom: 20px;
       flex-wrap: wrap;
+      position: relative;
     }
     input, button {
       padding: 10px;
@@ -43,6 +43,7 @@
       border: none;
       color: white;
       cursor: pointer;
+      flex: 0 0 auto;
     }
     button:hover {
       background-color: #e04848;
@@ -50,12 +51,22 @@
     .results {
       margin-top: 20px;
     }
-    .result-card {
-      background: #fafafa;
-      border: 1px solid #ddd;
-      padding: 15px;
-      border-radius: 5px;
-      margin-bottom: 10px;
+    .suggestions {
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      max-height: 150px;
+      overflow-y: auto;
+      position: absolute;
+      z-index: 1000;
+      width: 70%;
+    }
+    .suggestion-item {
+      padding: 8px;
+      cursor: pointer;
+    }
+    .suggestion-item:hover {
+      background: #f0f0f0;
     }
     pre {
       background: #f0f0f0;
@@ -73,7 +84,10 @@
     <!-- Hotel Search -->
     <h2>Search Hotels</h2>
     <form id="hotelSearchForm">
-      <input type="text" id="city" placeholder="Enter city (e.g., Delhi)" required>
+      <div style="flex:1; position:relative;">
+        <input type="text" id="hotelCity" placeholder="Enter city (e.g., Delhi)" autocomplete="off" required>
+        <div id="hotelSuggestions" class="suggestions"></div>
+      </div>
       <button type="submit">Search Hotels</button>
     </form>
     <div id="hotelResults" class="results"></div>
@@ -81,44 +95,9 @@
     <!-- Flight Search -->
     <h2>Search Flights</h2>
     <form id="flightSearchForm">
-      <input type="text" id="origin" placeholder="From (e.g., DEL)" required>
-      <input type="text" id="destination" placeholder="To (e.g., BOM)" required>
-      <input type="date" id="flightDate" required>
-      <button type="submit">Search Flights</button>
-    </form>
-    <div id="flightResults" class="results"></div>
-  </div>
-
-  <script>
-    // Hotel Search
-    document.getElementById('hotelSearchForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const city = document.getElementById('city').value;
-      document.getElementById('hotelResults').innerHTML = "<p>Loading hotels...</p>";
-      try {
-        const response = await fetch(`/api/hotels?city=${city}`);
-        const data = await response.json();
-        document.getElementById('hotelResults').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-      } catch (error) {
-        document.getElementById('hotelResults').innerHTML = "<p>Error fetching hotels.</p>";
-      }
-    });
-
-    // Flight Search
-    document.getElementById('flightSearchForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const origin = document.getElementById('origin').value;
-      const destination = document.getElementById('destination').value;
-      const date = document.getElementById('flightDate').value;
-      document.getElementById('flightResults').innerHTML = "<p>Loading flights...</p>";
-      try {
-        const response = await fetch(`/api/flights?origin=${origin}&destination=${destination}&date=${date}`);
-        const data = await response.json();
-        document.getElementById('flightResults').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-      } catch (error) {
-        document.getElementById('flightResults').innerHTML = "<p>Error fetching flights.</p>";
-      }
-    });
-  </script>
-</body>
-</html>
+      <div style="flex:1; position:relative;">
+        <input type="text" id="flightOrigin" placeholder="From (e.g., DEL)" autocomplete="off" required>
+        <div id="originSuggestions" class="suggestions"></div>
+      </div>
+      <div style="flex:1; position:relative;">
+        <input type="text" id="flightDestination" placeholde
