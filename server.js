@@ -3,19 +3,19 @@ const path = require("path");
 const axios = require("axios");
 
 const app = express();
-app.use(express.static(__dirname));
+app.use(express.static(__dirname)); // Serve static files like index.html, styles.css, script.js
 
 let amadeusToken = "";
 
-// Fetch Amadeus Token using environment variables
+// ===== FETCH AMADEUS TOKEN =====
 async function getAmadeusToken() {
   try {
     const response = await axios.post(
       "https://test.api.amadeus.com/v1/security/oauth2/token",
       new URLSearchParams({
         grant_type: "client_credentials",
-        client_id: process.env.CLIENT_ID,        // From Render environment variables
-        client_secret: process.env.CLIENT_SECRET // From Render environment variables
+        client_id: process.env.CLIENT_ID,        // Use Render environment variable
+        client_secret: process.env.CLIENT_SECRET // Use Render environment variable
       })
     );
     amadeusToken = response.data.access_token;
@@ -25,7 +25,7 @@ async function getAmadeusToken() {
   }
 }
 
-// Ensure token is available before handling requests
+// Middleware to ensure token is available
 app.use(async (req, res, next) => {
   if (!amadeusToken) {
     await getAmadeusToken();
@@ -33,13 +33,12 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// Hotel Search API (Amadeus Locations Search)
+// ===== HOTEL SEARCH API =====
+// Amadeus doesn't directly return hotel names by city in the free version, so we use location search as an example
 app.get("/api/hotels", async (req, res) => {
   try {
     const { city } = req.query;
-    if (!city) {
-      return res.status(400).json({ error: "City is required" });
-    }
+    if (!city) return res.status(400).json({ error: "City is required" });
 
     const response = await axios.get(
       `https://test.api.amadeus.com/v1/reference-data/locations?subType=CITY&keyword=${city}`,
@@ -53,7 +52,7 @@ app.get("/api/hotels", async (req, res) => {
   }
 });
 
-// Flight Search API
+// ===== FLIGHT SEARCH API =====
 app.get("/api/flights", async (req, res) => {
   try {
     const { origin, destination, date } = req.query;
@@ -73,11 +72,35 @@ app.get("/api/flights", async (req, res) => {
   }
 });
 
-// Serve index.html for all other routes
+// ===== SUGGESTIONS API =====
+app.get("/api/suggestions", async (req, res) => {
+  try {
+    const { keyword, type } = req.query;
+    if (!keyword) return res.json([]);
+
+    const response = await axios.get(
+      `https://test.api.amadeus.com/v1/reference-data/locations?subType=${type}&keyword=${keyword}&page%5Blimit%5D=5`,
+      { headers: { Authorization: `Bearer ${amadeusToken}` } }
+    );
+
+    // Format response
+    const suggestions = response.data.data.map(item => ({
+      code: item.iataCode,
+      name: item.name || item.detailedName
+    }));
+
+    res.json(suggestions);
+  } catch (error) {
+    console.error("Suggestions API Error:", error.response?.data || error.message);
+    res.status(500).json([]);
+  }
+});
+
+// ===== SERVE FRONTEND =====
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// Start the server
+// ===== START SERVER =====
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
