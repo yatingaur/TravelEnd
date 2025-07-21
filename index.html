@@ -1,137 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xyntrio Travel</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MMT Clone - Live Hotel & Flight Search</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Simple inline CSS if you don't have styles.css */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+    form {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      flex: 1;
+      min-width: 150px;
+    }
+    button {
+      background-color: #ff5a5f;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #e04848;
+    }
+    .results {
+      margin-top: 20px;
+    }
+    .result-card {
+      background: #fafafa;
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+    pre {
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 5px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
 </head>
 <body>
-    <!-- HEADER -->
-    <header class="header">
-        <img src="logo.svg" alt="Xyntrio Logo" class="logo">
-        <h1>Xyntrio Travel</h1>
-        <p>Flights, Hotels & Holidays – All in One Place!</p>
-    </header>
+  <div class="container">
+    <h1>MMT Clone - Live API Search</h1>
 
-    <!-- NAVIGATION -->
-    <nav class="navbar">
-        <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Flights</a></li>
-            <li><a href="#">Hotels</a></li>
-            <li><a href="#">Holiday Packages</a></li>
-            <li><a href="#">Contact</a></li>
-        </ul>
-    </nav>
+    <!-- Hotel Search -->
+    <h2>Search Hotels</h2>
+    <form id="hotelSearchForm">
+      <input type="text" id="city" placeholder="Enter city (e.g., Delhi)" required>
+      <button type="submit">Search Hotels</button>
+    </form>
+    <div id="hotelResults" class="results"></div>
 
-    <!-- BOOKING SEARCH SECTION -->
-    <section class="booking-section">
-        <h2>Book Your Trip</h2>
-        <div class="booking-tabs">
-            <button class="tab active" onclick="showTab('flights')">Flights</button>
-            <button class="tab" onclick="showTab('hotels')">Hotels</button>
-        </div>
+    <!-- Flight Search -->
+    <h2>Search Flights</h2>
+    <form id="flightSearchForm">
+      <input type="text" id="origin" placeholder="From (e.g., DEL)" required>
+      <input type="text" id="destination" placeholder="To (e.g., BOM)" required>
+      <input type="date" id="flightDate" required>
+      <button type="submit">Search Flights</button>
+    </form>
+    <div id="flightResults" class="results"></div>
+  </div>
 
-        <!-- Flight Booking Form -->
-        <div id="flights" class="booking-form active">
-            <form>
-                <label>From (IATA Code):</label>
-                <input type="text" placeholder="City or Airport" required>
-                <label>To (IATA Code):</label>
-                <input type="text" placeholder="Destination" required>
-                <label>Departure:</label>
-                <input type="date" required>
-                <label>Return:</label>
-                <input type="date">
-                <label>Passengers:</label>
-                <input type="number" min="1" value="1" required>
-                <button type="submit">Search Flights</button>
-            </form>
-        </div>
+  <script>
+    // Hotel Search
+    document.getElementById('hotelSearchForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const city = document.getElementById('city').value;
+      document.getElementById('hotelResults').innerHTML = "<p>Loading hotels...</p>";
+      try {
+        const response = await fetch(`/api/hotels?city=${city}`);
+        const data = await response.json();
+        document.getElementById('hotelResults').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      } catch (error) {
+        document.getElementById('hotelResults').innerHTML = "<p>Error fetching hotels.</p>";
+      }
+    });
 
-        <!-- Hotel Booking Form -->
-        <div id="hotels" class="booking-form" style="display: none;">
-            <form>
-                <label>City Code (e.g. DEL):</label>
-                <input type="text" placeholder="City or Hotel" required>
-                <label>Check-in:</label>
-                <input type="date" required>
-                <label>Check-out:</label>
-                <input type="date" required>
-                <label>Guests:</label>
-                <input type="number" min="1" value="1" required>
-                <button type="submit">Search Hotels</button>
-            </form>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer>
-        <p>&copy; 2025 Xyntrio Travel. All rights reserved.</p>
-    </footer>
-
-    <script>
-        const API_BASE = "https://travelend.onrender.com"; // Your Render backend URL
-
-        function showTab(tab) {
-            document.querySelectorAll('.booking-form').forEach(form => form.style.display = 'none');
-            document.getElementById(tab).style.display = 'block';
-            document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        function displayResults(data, type) {
-            const existing = document.querySelector('.results');
-            if (existing) existing.remove();
-
-            const container = document.createElement('div');
-            container.className = 'results';
-            container.innerHTML = `<h3>${type} Results:</h3>`;
-
-            if (!data || data.length === 0) {
-                container.innerHTML += `<p>No ${type.toLowerCase()} found.</p>`;
-            } else {
-                if (data[0].mock) {
-                    container.innerHTML += `<p><em>Showing sample data</em></p>`;
-                }
-                data.forEach(item => {
-                    if (type === 'Flights') {
-                        const flight = item.itineraries[0].segments[0];
-                        container.innerHTML += `<p>${item.validatingAirlineCodes[0]}: ₹${item.price.total} — ${flight.departure.iataCode} → ${flight.arrival.iataCode}</p>`;
-                    } else {
-                        const hotel = item.hotel.name || "Hotel";
-                        const price = item.offers[0].price.total;
-                        container.innerHTML += `<p>${hotel} — from ₹${price}</p>`;
-                    }
-                });
-            }
-            document.querySelector('.booking-section').appendChild(container);
-        }
-
-        // Flights Search
-        document.querySelector('#flights form').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const from = e.target.querySelector('input[placeholder="City or Airport"]').value.toUpperCase();
-            const to = e.target.querySelector('input[placeholder="Destination"]').value.toUpperCase();
-            const date = e.target.querySelector('input[type="date"]').value;
-
-            const res = await fetch(`${API_BASE}/api/flights?from=${from}&to=${to}&date=${date}`);
-            const flights = await res.json();
-            displayResults(flights, 'Flights');
-        });
-
-        // Hotels Search
-        document.querySelector('#hotels form').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const city = e.target.querySelector('input[placeholder="City or Hotel"]').value.toUpperCase();
-            const checkIn = e.target.querySelector('input[type="date"]').value;
-            const checkOut = e.target.querySelectorAll('input[type="date"]')[1].value;
-
-            const res = await fetch(`${API_BASE}/api/hotels?city=${city}&checkIn=${checkIn}&checkOut=${checkOut}`);
-            const hotels = await res.json();
-            displayResults(hotels, 'Hotels');
-        });
-    </script>
+    // Flight Search
+    document.getElementById('flightSearchForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const origin = document.getElementById('origin').value;
+      const destination = document.getElementById('destination').value;
+      const date = document.getElementById('flightDate').value;
+      document.getElementById('flightResults').innerHTML = "<p>Loading flights...</p>";
+      try {
+        const response = await fetch(`/api/flights?origin=${origin}&destination=${destination}&date=${date}`);
+        const data = await response.json();
+        document.getElementById('flightResults').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      } catch (error) {
+        document.getElementById('flightResults').innerHTML = "<p>Error fetching flights.</p>";
+      }
+    });
+  </script>
 </body>
 </html>
