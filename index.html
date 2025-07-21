@@ -3,32 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MMT Clone - Hotels & Flights</title>
+  <title>MMT Clone - All Services</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Navigation Bar -->
   <nav class="navbar">
     <div class="logo">MMT Clone</div>
     <ul class="nav-links">
-      <li><a href="#">Flights</a></li>
-      <li><a href="#">Hotels</a></li>
-      <li><a href="#">Holiday Packages</a></li>
-      <li><a href="#">Trains</a></li>
-      <li><a href="#">Cabs</a></li>
+      <li><a href="#hotels">Hotels</a></li>
+      <li><a href="#flights">Flights</a></li>
+      <li><a href="#holidays">Holiday Packages</a></li>
+      <li><a href="#trains">Trains</a></li>
+      <li><a href="#cabs">Cabs</a></li>
     </ul>
   </nav>
 
-  <!-- Main Container -->
   <div class="container">
-    <h1>Search Hotels & Flights</h1>
+    <h1>Search & Book</h1>
 
-    <!-- Hotel Search -->
-    <section class="search-section">
+    <!-- Hotels -->
+    <section id="hotels" class="search-section">
       <h2>Search Hotels</h2>
       <form id="hotelSearchForm">
         <div style="flex:1; position:relative;">
-          <input type="text" id="hotelCity" placeholder="Enter city (e.g., Delhi)" autocomplete="off" required>
+          <input type="text" id="hotelCity" placeholder="Enter city" autocomplete="off" required>
           <div id="hotelSuggestions" class="suggestions"></div>
         </div>
         <button type="submit">Search Hotels</button>
@@ -36,8 +34,8 @@
       <div id="hotelResults" class="results"></div>
     </section>
 
-    <!-- Flight Search -->
-    <section class="search-section">
+    <!-- Flights -->
+    <section id="flights" class="search-section">
       <h2>Search Flights</h2>
       <form id="flightSearchForm">
         <div style="flex:1; position:relative;">
@@ -52,6 +50,38 @@
         <button type="submit">Search Flights</button>
       </form>
       <div id="flightResults" class="results"></div>
+    </section>
+
+    <!-- Holiday Packages -->
+    <section id="holidays" class="search-section">
+      <h2>Search Holiday Packages</h2>
+      <form id="holidaySearchForm">
+        <input type="text" id="holidayDestination" placeholder="Enter destination" required>
+        <button type="submit">Search Holidays</button>
+      </form>
+      <div id="holidayResults" class="results"></div>
+    </section>
+
+    <!-- Trains -->
+    <section id="trains" class="search-section">
+      <h2>Search Trains</h2>
+      <form id="trainSearchForm">
+        <input type="text" id="trainOrigin" placeholder="From (e.g., Delhi)" required>
+        <input type="text" id="trainDestination" placeholder="To (e.g., Mumbai)" required>
+        <button type="submit">Search Trains</button>
+      </form>
+      <div id="trainResults" class="results"></div>
+    </section>
+
+    <!-- Cabs -->
+    <section id="cabs" class="search-section">
+      <h2>Search Cabs</h2>
+      <form id="cabSearchForm">
+        <input type="text" id="cabPickup" placeholder="Pickup location" required>
+        <input type="text" id="cabDrop" placeholder="Drop location" required>
+        <button type="submit">Search Cabs</button>
+      </form>
+      <div id="cabResults" class="results"></div>
     </section>
   </div>
 
