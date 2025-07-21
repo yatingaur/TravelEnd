@@ -1,29 +1,61 @@
-/* General Reset */
+/* Reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Body Styling */
+/* Body */
 body {
   font-family: 'Helvetica Neue', Arial, sans-serif;
   background: linear-gradient(120deg, #0a3d62, #3c6382);
   color: #333;
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 20px;
 }
 
-/* Container */
+/* Navigation Bar */
+.navbar {
+  background-color: #0a3d62;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links li a {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.nav-links li a:hover {
+  color: #f39c12;
+}
+
+/* Main Container */
 .container {
   background: #fff;
   max-width: 900px;
   width: 100%;
   border-radius: 8px;
   padding: 30px 20px;
+  margin: 0 auto;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
@@ -41,6 +73,15 @@ h2 {
   margin-bottom: 15px;
   color: #3c6382;
   font-size: 1.5rem;
+}
+
+/* Search Sections */
+.search-section {
+  margin-top: 20px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Forms */
@@ -106,7 +147,7 @@ button:hover {
   transform: translateY(-2px);
 }
 
-/* Suggestions Dropdown */
+/* Suggestions */
 .suggestions {
   background: #fff;
   border: 1px solid #ccc;
