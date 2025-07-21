@@ -1,53 +1,44 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const Amadeus = require('amadeus');
+const express = require("express");
+const path = require("path");
+const fs = require("fs");
 
 const app = express();
-const PORT = 3000;
 
-app.use(cors());
-app.use(express.json());
+// Determine where index.html is located
+const publicDir = path.join(__dirname, "public");
+const rootIndex = path.join(__dirname, "index.html");
 
-const amadeus = new Amadeus({
-  clientId: process.env.AMADEUS_CLIENT_ID,
-  clientSecret: process.env.AMADEUS_CLIENT_SECRET
-});
+// Serve static files
+if (fs.existsSync(publicDir)) {
+  app.use(express.static(publicDir));
+} else {
+  app.use(express.static(__dirname));
+}
 
-// Flight search
-app.get('/api/flights', async (req, res) => {
-  try {
-    const { from, to, date } = req.query;
-    const response = await amadeus.shopping.flightOffersSearch.get({
-      originLocationCode: from,
-      destinationLocationCode: to,
-      departureDate: date,
-      adults: '1'
-    });
-    res.json(response.data);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: 'Flight API error' });
+// Route for home page
+app.get("/", (req, res) => {
+  if (fs.existsSync(publicDir + "/index.html")) {
+    res.sendFile(path.join(publicDir, "index.html"));
+  } else if (fs.existsSync(rootIndex)) {
+    res.sendFile(rootIndex);
+  } else {
+    res.status(404).send("index.html not found!");
   }
 });
 
-// Hotel search
-app.get('/api/hotels', async (req, res) => {
-  try {
-    const { city, checkIn, checkOut } = req.query;
-    const response = await amadeus.shopping.hotelOffers.get({
-      cityCode: city,
-      checkInDate: checkIn,
-      checkOutDate: checkOut,
-      roomQuantity: '1'
-    });
-    res.json(response.data);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: 'Hotel API error' });
+// Fallback for other routes (Optional)
+app.get("*", (req, res) => {
+  if (fs.existsSync(publicDir + "/index.html")) {
+    res.sendFile(path.join(publicDir, "index.html"));
+  } else if (fs.existsSync(rootIndex)) {
+    res.sendFile(rootIndex);
+  } else {
+    res.status(404).send("Page not found!");
   }
 });
 
+// Start server
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
