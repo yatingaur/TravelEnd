@@ -3,101 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MMT Clone - Hotels & Flights Search</title>
+  <title>MMT Clone - Hotels & Flights</title>
   <link rel="stylesheet" href="styles.css">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 800px;
-      margin: 40px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h1, h2 {
-      text-align: center;
-      color: #333;
-    }
-    form {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      position: relative;
-    }
-    input, button {
-      padding: 10px;
-      font-size: 16px;
-      flex: 1;
-      min-width: 150px;
-    }
-    button {
-      background-color: #ff5a5f;
-      border: none;
-      color: white;
-      cursor: pointer;
-      flex: 0 0 auto;
-    }
-    button:hover {
-      background-color: #e04848;
-    }
-    .results {
-      margin-top: 20px;
-    }
-    .suggestions {
-      background: white;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      max-height: 150px;
-      overflow-y: auto;
-      position: absolute;
-      z-index: 1000;
-      width: 70%;
-    }
-    .suggestion-item {
-      padding: 8px;
-      cursor: pointer;
-    }
-    .suggestion-item:hover {
-      background: #f0f0f0;
-    }
-    pre {
-      background: #f0f0f0;
-      padding: 10px;
-      border-radius: 5px;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-  </style>
 </head>
 <body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="logo">MMT Clone</div>
+    <ul class="nav-links">
+      <li><a href="#">Flights</a></li>
+      <li><a href="#">Hotels</a></li>
+      <li><a href="#">Holiday Packages</a></li>
+      <li><a href="#">Trains</a></li>
+      <li><a href="#">Cabs</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Container -->
   <div class="container">
-    <h1>MMT Clone - Live API Search</h1>
+    <h1>Search Hotels & Flights</h1>
 
     <!-- Hotel Search -->
-    <h2>Search Hotels</h2>
-    <form id="hotelSearchForm">
-      <div style="flex:1; position:relative;">
-        <input type="text" id="hotelCity" placeholder="Enter city (e.g., Delhi)" autocomplete="off" required>
-        <div id="hotelSuggestions" class="suggestions"></div>
-      </div>
-      <button type="submit">Search Hotels</button>
-    </form>
-    <div id="hotelResults" class="results"></div>
+    <section class="search-section">
+      <h2>Search Hotels</h2>
+      <form id="hotelSearchForm">
+        <div style="flex:1; position:relative;">
+          <input type="text" id="hotelCity" placeholder="Enter city (e.g., Delhi)" autocomplete="off" required>
+          <div id="hotelSuggestions" class="suggestions"></div>
+        </div>
+        <button type="submit">Search Hotels</button>
+      </form>
+      <div id="hotelResults" class="results"></div>
+    </section>
 
     <!-- Flight Search -->
-    <h2>Search Flights</h2>
-    <form id="flightSearchForm">
-      <div style="flex:1; position:relative;">
-        <input type="text" id="flightOrigin" placeholder="From (e.g., DEL)" autocomplete="off" required>
-        <div id="originSuggestions" class="suggestions"></div>
-      </div>
-      <div style="flex:1; position:relative;">
-        <input type="text" id="flightDestination" placeholde
+    <section class="search-section">
+      <h2>Search Flights</h2>
+      <form id="flightSearchForm">
+        <div style="flex:1; position:relative;">
+          <input type="text" id="flightOrigin" placeholder="From (e.g., DEL)" autocomplete="off" required>
+          <div id="originSuggestions" class="suggestions"></div>
+        </div>
+        <div style="flex:1; position:relative;">
+          <input type="text" id="flightDestination" placeholder="To (e.g., BOM)" autocomplete="off" required>
+          <div id="destinationSuggestions" class="suggestions"></div>
+        </div>
+        <input type="date" id="flightDate" required>
+        <button type="submit">Search Flights</button>
+      </form>
+      <div id="flightResults" class="results"></div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
