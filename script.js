@@ -1,4 +1,4 @@
-// ===== Autocomplete Suggestions =====
+// Helper for Autocomplete
 async function fetchSuggestions(query, type, suggestionsDivId) {
   if (query.length < 2) {
     document.getElementById(suggestionsDivId).innerHTML = '';
@@ -6,13 +6,14 @@ async function fetchSuggestions(query, type, suggestionsDivId) {
   }
 
   try {
+    console.log(`Fetching suggestions for ${query} (${type})`);
     const response = await fetch(`/api/suggestions?keyword=${encodeURIComponent(query)}&type=${type}`);
     const data = await response.json();
+    console.log("Suggestions:", data);
 
-    const suggestionsDiv = document.getElementById(suggestionsDivId);
-    suggestionsDiv.innerHTML = data
-      .map(item => `<div class="suggestion-item" onclick="selectSuggestion('${item.name}', '${suggestionsDivId}')">${item.name} (${item.code})</div>`)
-      .join('');
+    document.getElementById(suggestionsDivId).innerHTML = data.length
+      ? data.map(item => `<div class="suggestion-item" onclick="selectSuggestion('${item.name}', '${suggestionsDivId}')">${item.name} (${item.code})</div>`).join('')
+      : "<div class='suggestion-item'>No suggestions</div>";
   } catch (error) {
     console.error("Suggestion Fetch Error:", error);
   }
@@ -24,7 +25,7 @@ function selectSuggestion(value, suggestionsDivId) {
   document.getElementById(suggestionsDivId).innerHTML = '';
 }
 
-// ===== Hotel Search =====
+// Hotel Search
 document.getElementById('hotelSearchForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const city = document.getElementById('hotelCity').value;
@@ -34,21 +35,18 @@ document.getElementById('hotelSearchForm').addEventListener('submit', async (e) 
   try {
     const response = await fetch(`/api/hotels?city=${encodeURIComponent(city)}`);
     const data = await response.json();
+    console.log("Hotel Data:", data);
 
-    hotelResults.innerHTML = data
-      .map(hotel => `
-        <div class="result-card">
-          <h3>${hotel.label || hotel.name}</h3>
-          <p>City: ${hotel.city_name || city}</p>
-        </div>
-      `)
-      .join('');
+    hotelResults.innerHTML = data.length
+      ? data.map(hotel => `<div class="result-card"><h3>${hotel.label || hotel.name}</h3><p>${hotel.city_name || city}</p></div>`).join('')
+      : "<p>No hotels found.</p>";
   } catch (error) {
+    console.error("Hotel Fetch Error:", error);
     hotelResults.innerHTML = "<p>Error fetching hotels.</p>";
   }
 });
 
-// ===== Flight Search =====
+// Flight Search
 document.getElementById('flightSearchForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const origin = document.getElementById('flightOrigin').value;
@@ -59,42 +57,18 @@ document.getElementById('flightSearchForm').addEventListener('submit', async (e)
   try {
     const response = await fetch(`/api/flights?departId=${encodeURIComponent(origin)}&arrivalId=${encodeURIComponent(destination)}`);
     const data = await response.json();
+    console.log("Flight Data:", data);
 
-    flightResults.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+    flightResults.innerHTML = data?.data
+      ? `<pre>${JSON.stringify(data.data, null, 2)}</pre>`
+      : "<p>No flights found.</p>";
   } catch (error) {
+    console.error("Flight Fetch Error:", error);
     flightResults.innerHTML = "<p>Error fetching flights.</p>";
   }
 });
 
-// ===== Other Searches =====
-document.getElementById('holidaySearchForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const response = await fetch('/api/holidays');
-  const data = await response.json();
-  document.getElementById('holidayResults').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-});
-
-document.getElementById('trainSearchForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const response = await fetch('/api/trains');
-  const data = await response.json();
-  document.getElementById('trainResults').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-});
-
-document.getElementById('cabSearchForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const response = await fetch('/api/cabs');
-  const data = await response.json();
-  document.getElementById('cabResults').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-});
-
-// Autocomplete Event Listeners
-document.getElementById('hotelCity').addEventListener('input', (e) => {
-  fetchSuggestions(e.target.value, 'HOTEL', 'hotelSuggestions');
-});
-document.getElementById('flightOrigin').addEventListener('input', (e) => {
-  fetchSuggestions(e.target.value, 'AIRPORT', 'originSuggestions');
-});
-document.getElementById('flightDestination').addEventListener('input', (e) => {
-  fetchSuggestions(e.target.value, 'AIRPORT', 'destinationSuggestions');
-});
+// Attach Event Listeners
+document.getElementById('hotelCity').addEventListener('input', (e) => fetchSuggestions(e.target.value, 'HOTEL', 'hotelSuggestions'));
+document.getElementById('flightOrigin').addEventListener('input', (e) => fetchSuggestions(e.target.value, 'AIRPORT', 'originSuggestions'));
+document.getElementById('flightDestination').addEventListener('input', (e) => fetchSuggestions(e.target.value, 'AIRPORT', 'destinationSuggestions'));
