@@ -3,14 +3,15 @@ const path = require("path");
 const axios = require("axios");
 
 const app = express();
-app.use(express.static(__dirname)); // Serve static files
+app.use(express.static(__dirname));
 
 const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
 
-// ===== Hotels API (Booking.com) =====
+// ===== Hotels API =====
 app.get("/api/hotels", async (req, res) => {
   try {
-    const { city = "New York" } = req.query;
+    const { city } = req.query;
+    if (!city) return res.status(400).json({ error: "City is required" });
 
     const response = await axios.get("https://booking-com.p.rapidapi.com/v1/hotels/locations", {
       params: { name: city, locale: "en-us" },
@@ -20,6 +21,10 @@ app.get("/api/hotels", async (req, res) => {
       },
     });
 
+    if (!response.data || response.data.length === 0) {
+      return res.json([]);
+    }
+
     res.json(response.data);
   } catch (error) {
     console.error("Hotels API Error:", error.response?.data || error.message);
@@ -27,10 +32,10 @@ app.get("/api/hotels", async (req, res) => {
   }
 });
 
-// ===== Flights API (Booking.com) =====
+// ===== Flights API =====
 app.get("/api/flights", async (req, res) => {
   try {
-    const { departId = "JFK", arrivalId = "LOS" } = req.query;
+    const { departId = "JFK", arrivalId = "LAX" } = req.query;
 
     const response = await axios.get("https://booking-com18.p.rapidapi.com/flights/v2/min-price-oneway", {
       params: { departId, arrivalId },
@@ -47,7 +52,7 @@ app.get("/api/flights", async (req, res) => {
   }
 });
 
-// ===== Suggestions API =====
+// Suggestions API
 app.get("/api/suggestions", async (req, res) => {
   try {
     const { keyword, type } = req.query;
@@ -61,12 +66,10 @@ app.get("/api/suggestions", async (req, res) => {
           "X-RapidAPI-Key": RAPIDAPI_KEY,
         },
       });
-
-      const suggestions = response.data.map(item => ({
+      return res.json(response.data.map(item => ({
         code: item.dest_id || item.label,
         name: item.label || item.name,
-      }));
-      return res.json(suggestions);
+      })));
     }
 
     if (type === "AIRPORT") {
@@ -77,12 +80,10 @@ app.get("/api/suggestions", async (req, res) => {
           "X-RapidAPI-Key": RAPIDAPI_KEY,
         },
       });
-
-      const suggestions = response.data?.map(item => ({
+      return res.json(response.data?.map(item => ({
         code: item.iata_code || item.label,
         name: item.label || item.name,
-      })) || [];
-      return res.json(suggestions);
+      })) || []);
     }
 
     res.json([]);
@@ -90,28 +91,6 @@ app.get("/api/suggestions", async (req, res) => {
     console.error("Suggestions API Error:", error.response?.data || error.message);
     res.status(500).json([]);
   }
-});
-
-// ===== Dummy APIs for Holidays, Trains, Cabs =====
-app.get("/api/holidays", (req, res) => {
-  res.json([
-    { id: 1, package: "Goa 3N/4D Beach Package", price: 12000 },
-    { id: 2, package: "Kerala Backwaters Tour", price: 18000 },
-  ]);
-});
-
-app.get("/api/trains", (req, res) => {
-  res.json([
-    { train: "Rajdhani Express", from: "Delhi", to: "Mumbai", price: 2200 },
-    { train: "Shatabdi Express", from: "Delhi", to: "Chandigarh", price: 800 },
-  ]);
-});
-
-app.get("/api/cabs", (req, res) => {
-  res.json([
-    { cab: "Sedan - Ola", price: 500 },
-    { cab: "SUV - Uber", price: 900 },
-  ]);
 });
 
 // ===== Serve Frontend =====
