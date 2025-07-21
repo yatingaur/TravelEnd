@@ -1,14 +1,14 @@
 {
-  "name": "mmt-clone",
+  "name": "TravelEnd",
   "version": "1.0.0",
-  "description": "A simple MMT clone with hotel & flight search",
+  "description": "TravelEnd with Hotels, Flights, Holidays, Trains and Cabs",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "axios": "^1.4.0"
+    "axios": "^1.4.0",
+    "express": "^4.18.2"
   },
   "license": "MIT"
 }
